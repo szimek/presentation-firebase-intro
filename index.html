@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Firebase intro</title>
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">-->
+  <!--<meta name="viewport" content="width=device-width, initial-scale=1.0">-->
+  <!--This one seems to work all the time, but really small on ipad-->
+  <!--<meta name="viewport" content="initial-scale=0.4">-->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <link rel="stylesheet" media="all" href="theme/css/default.css">
+  <link rel="stylesheet" media="all" href="theme/css/meetjs.css">
+  <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="theme/css/phone.css">
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->
+  <script data-main="js/slides" src="js/require-1.0.8.min.js"></script>
+</head>
+<body style="opacity: 0">
+
+<slides class="layout-widescreen">
+
+  <slide class="fill nobackground" style="background-image: url(images/meetjs_logo.png)"></slide>
+
+  <slide class="title-slide segue nobackground">
+    <aside class="gdbar"><img src="images/meetjs_bar.png" alt="meetjs logo"></aside>
+    <!-- The content of this hgroup is replaced programmatically through the slide_config.json. -->
+    <hgroup class="auto-fadein">
+      <h1 data-config-title><!-- populated from slide_config.json --></h1>
+      <h2 data-config-subtitle><!-- populated from slide_config.json --></h2>
+      <p data-config-presenter><!-- populated from slide_config.json --></p>
+    </hgroup>
+  </slide>
+
+  <slide class="logoslide nobackground">
+    <article class="flexbox vcenter">
+      <span><img src="images/firebase_logo.png" alt="Firebase logo"></span>
+    </article>
+  </slide>
+
+  <slide>
+    <article class="flexbox vcenter">
+      <q>Scalable real-time backend</q>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Demo #1</h1>
+    </article>
+  </slide>
+
+  <slide class="fill nobackground" style="background-image: url(images/demo-todomvc-without-firebase.gif)">
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>TodoMVC</h2>
+      <h3>AngularJS</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        todomvc.controller('TodoCtrl', function TodoCtrl(
+          $scope, $location, <b>todoStorage</b>) {
+          <b>var $scope.todos = todoStorage.get();</b>
+          <b>$scope.$watch('todos', function (newValue, oldValue) {
+            // ...
+            if (newValue !== oldValue) {
+              todoStorage.put(todos);
+            }
+          }</b>
+
+          $scope.addTodo = function () {
+            <b>$scope.todos.push({
+              title: newTodo,
+              completed: false
+            });</b>
+          }
+        })
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>TodoMVC</h2>
+      <h3>AngularJS + AngularFire</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        todomvc.controller('TodoCtrl', function TodoCtrl(
+          $scope, $location, <b>angularFire</b>) {
+          var url = 'https://todomvc-angular.firebaseio.com/';
+          <b>angularFire(url, $scope, 'todos', {}).then(function () {
+            $scope.$watch('todos', function () {
+              // ...
+            }</b>
+
+             $scope.addTodo = function () {
+               <b>$scope.todos[new Firebase(url).push().name()] = {
+                title: newTodo,
+                completed: false
+              };</b>
+            }
+          }
+        }
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill nobackground" style="background-image: url(images/demo-todomvc-with-firebase.gif)">
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Demo #2</h1>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h3>http://szimek.github.io/presentation-firebase-intro?follow=true</h3>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Presentation synchronization</h2>
+      <h3>Broadcasting</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        ref = new Firebase('https://presentations.firebaseio.com');
+
+        auth = new FirebaseSimpleLogin(ref, function(error, user) {
+          if (error) return console.log(error);
+          if (!user) auth.login('github'); // show popup
+        });
+
+        document.addEventListener('slideenter', function (event) {
+          ref.child('firebase-intro').set(event.slideNumber);
+        });
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Presentation synchronization</h2>
+      <h3>Listening</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        ref = new Firebase('https://presentations.firebaseio.com');
+
+        ref.child('firebase-intro').on('value', function (snapshot) {
+          var slideNumber = snapshot.val();
+          location.hash = slideNumber;
+        });
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>References</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>References</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        firebaseRef = new Firebase(
+          'https://presentations.firebaseio.com<b>/firebase-intro</b>'
+        );
+
+        // or
+
+        ref = new Firebase('https://presentations.firebaseio.com/');
+        firebaseRef = ref.child(<b>'firebase-intro'</b>);
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Writing data</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Writing data</h2>
+      <h3>Primitives</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        ref = new Firebase(
+          'https://presentations.firebaseio.com/firebase-intro'
+        );
+
+        ref.set(slideNumber, function (error) {
+          if (error) console.log(error);
+        });
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Writing data</h2>
+      <h3>Objects</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        ref = new Firebase('https://presentations.firebaseio.com');
+
+        ref.set({"firebase-intro": slideNumber});
+
+        ref.update({"firebase-intro": slideNumber});
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Writing data</h2>
+      <h3>Lists</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        var ref = new Firebase('https://chat.firebaseio.com/messages');
+
+        ref.child(<b>'message_1'</b>).set({<b>user_id: 'Alice'</b>, text: 'Hello'});
+
+        <b>// other user</b>
+
+        ref.child(<b>'message_1'</b>).set({<b>user_id: 'Bob'</b>, text: 'Hello'});
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Writing data</h2>
+      <h3>Lists</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        var ref = new Firebase('https://chat.firebaseio.com/messages');
+
+        // Automatically generate unique child name.
+        var newRef = <b>ref.push()</b>;
+        newRef.set({user_id: 'Bob', text: 'Hello'});
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Reading data</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Reading data</h2>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        var ref = new Firebase(
+          'https://presentations.firebaseio.com/firebase-intro'
+        );
+
+        ref.on(<b>'value'</b>, function (snapshot) {
+          var value = <b>snapshot.val()</b>;
+        }
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Reading data</h2>
+      <h3>Events</h3>
+    </hgroup>
+    <article>
+      <ul>
+        <li>value</li>
+        <li>child_added</li>
+        <li>child_changed</li>
+        <li>child_removed</li>
+        <li>child_moved</li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Queries</h1>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>no WHERE</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Queries</h2>
+      <h3>Methods</h3>
+    </hgroup>
+    <article>
+      <ul>
+        <li><code>limit()</code></li>
+        <li><code>startAt()</code></li>
+        <li><code>endAt()</code></li>
+      </ul>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Queries</h2>
+      <h3>Examples</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        var ref = new Firebase('https://chat.firebaseio.com/messages');
+
+        // Returns up to 100 child records
+        // and keeps total number of child elements at or below 100.
+        var limitedRef  = <b>ref.limit(100)</b>;
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Queries</h2>
+      <h3>Examples</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        var ref = new Firebase('https://chat.firebaseio.com/messages');
+
+        // Fetch all chat messages sent at or after 7:32 PM on 2/11/2012
+        <b>ref.startAt(1329017600)</b>.on('child_added', ...);
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Queries</h2>
+      <h3>Examples</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        var ref = new Firebase('https://chat.firebaseio.com/messages');
+
+        // Fetch 100 most recent messages before 7:32 PM on 2/11/2012
+        <b>ref.endAt(1329017600).limit(100)</b>.on('child_added', ...);
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <hgroup>
+      <h2>Queries</h2>
+      <h3>More info</h3>
+    </hgroup>
+    <article>
+      <p><a href="https://www.firebase.com/blog/2013-04-12-denormalizing-is-normal.html">Denormalizing Your Data is Normal</a></p>
+      <p><a href="https://www.firebase.com/blog/2013-10-01-queries-part-one.html">Queries, Part 1: Common SQL Queries Converted for Firebase</a></p>
+
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Authentication</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Authentication</h2>
+      <h3>Firebase Simple Login</h3>
+    </hgroup>
+    <article class="smaller">
+      <div class="centered auth">
+        <div>
+          <a href="https://www.firebase.com/docs/security/simple-login-facebook.html">
+            <div class="icon facebook"></div>
+            Facebook
+          </a>
+        </div>
+        <div>
+          <a href="https://www.firebase.com/docs/security/simple-login-twitter.html">
+            <div class="icon twitter"></div>
+            Twitter
+          </a>
+        </div>
+        <div>
+          <a href="https://www.firebase.com/docs/security/simple-login-github.html">
+            <div class="icon github"></div>
+            GitHub
+          </a>
+        </div>
+        <div>
+          <a href="https://www.firebase.com/docs/security/simple-login-persona.html">
+            <div class="icon persona"></div>
+            Persona
+          </a>
+        </div>
+        <div>
+          <a href="https://www.firebase.com/docs/security/simple-login-email-password.html">
+            <div class="icon email"></div>
+            Email and Password
+          </a>
+        </div>
+      </div>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Authentication</h2>
+      <h3>Firebase Simple Login</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        ref = new Firebase('https://chat.firebaseio.com');
+
+        auth = new FirebaseSimpleLogin(ref, function(error, user) {
+          // handle error and user state
+        });
+
+        auth.login('password', {
+          email: 'bob@example.com',
+          password: 'password'
+        });
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Authentication</h2>
+      <h3>Firebase Custom Login</h3>
+    </hgroup>
+    <article>
+      <p>Generate custom JSON Web Token on your server using your Firebase secret.</p>
+      <p>Then use it on the client to authenticate to Firebase.</p>
+      <pre class="prettyprint" data-lang="javascript">
+        var ref = new Firebase("https://chat.firebaseio.com/");
+
+        ref.auth(AUTH_TOKEN, function(error) {
+          if(error) {
+            console.log("Login Failed!", error);
+          } else {
+            console.log("Login Succeeded!");
+          }
+        });
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Authorization</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Authorization</h2>
+      <h3>Rules</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        {
+          "rules": {
+            ".read": true,
+            ".write": "auth.provider == 'github' && auth.username == 'szimek'"
+          }
+        }
+      </pre>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Authorization</h2>
+      <h3>Rules</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        {
+          "rules": {
+            "users": {
+              "$user": {
+                ".read": "$user == auth.username",
+                ".write": "$user == auth.username"
+              }
+            }
+          }
+        }
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Data validation</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Data validation</h2>
+      <h3>Rules</h3>
+    </hgroup>
+    <article>
+      <pre class="prettyprint" data-lang="javascript">
+        {
+          "rules": {
+            "tweets": {
+              "$id": {
+                ".read": true,
+                ".write": true,
+                ".validate": "newData.hasChildren([message'])",
+
+                "message": {
+                  ".validate": "newData.isString() && newData.val().length <= 140"
+                }
+              }
+            }
+          }
+        }
+      </pre>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Integrations</h1>
+    </article>
+  </slide>
+
+  <slide>
+    <hgroup>
+      <h2>Integrations</h2>
+      <h3>Official libraries</h3>
+    </hgroup>
+    <article class="smaller">
+      <div class="centered integrations">
+        <div>
+          <a href="http://github.com/firebase/backfire">
+            <div><img src="images/firebase-backbone-logo.png" alt="Backbone"></div>
+            BackFire
+          </a>
+        </div>
+        <div>
+          <a href="http://angularfire.com/">
+            <div><img src="images/firebase-angular-logo.png" alt="AngularJS"></div>
+            AngularFire
+          </a>
+        </div>
+        <div>
+          <a href="http://github.com/firebase/emberFire">
+            <div><img src="images/firebase-ember-logo.png" alt="EmberJS"></div>
+            EmberFire
+          </a>
+        </div>
+      </div>
+    </article>
+  </slide>
+
+  <slide class="fill">
+    <article class="flexbox vcenter">
+      <h1>Applications</h1>
+    </article>
+  </slide>
+
+  <slide class="thank-you-slide segue nobackground">
+    <article class="flexbox vleft auto-fadein">
+      <h2>Thank You!</h2>
+    </article>
+    <p class="auto-fadein" data-config-contact>
+      <!-- populated from slide_config.json -->
+    </p>
+  </slide>
+
+  <slide class="fill nobackground" style="background-image: url(images/meetjs_logo.png)"></slide>
+
+  <!-- don't remove this slide! -->
+  <slide class="backdrop"></slide>
+</slides>
+</body>
+</html>

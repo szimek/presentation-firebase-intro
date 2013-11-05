@@ -1,0 +1,62 @@
+.auth {
+  margin-top: 15%;
+}
+
+.col-5 > div {
+  display: inline-block;
+  width: 18%;
+  margin: 10px 0 20px;
+}
+
+.auth .icon {
+  height: 50px;
+  width: 42px;
+  margin: auto;
+  background: url('../../images/firebase_social_icons.png');
+  background-size: 250px 50px;
+}
+
+.auth a {
+  font-size: 60%;
+  border-bottom: none;
+}
+
+.auth .icon.facebook {
+  background-position: 0 0;
+}
+
+.auth .icon.twitter {
+  background-position: -41px 0;
+}
+
+.auth .icon.github {
+  background-position: -83px 0;
+}
+
+.auth .icon.persona {
+  background-position: -125px 0;
+}
+
+.auth .icon.email {
+  background-position: -166px 0;
+}
+
+.integrations {
+  margin-top: 15%;
+}
+
+.integrations > div {
+  width: 31%;
+  display: inline-block;
+}
+
+.integrations a {
+  font-size: 80%;
+  border-bottom: none;
+}
+
+
+.thank-you-slide {
+  background-color: #2e2934 !important;
+  color: white;
+}
