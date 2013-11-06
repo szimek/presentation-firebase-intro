@@ -162,7 +162,7 @@
 
         ref.child('firebase-intro').on('value', function (snapshot) {
           var slideNumber = snapshot.val();
-          location.hash = slideNumber;
+          window.slideDeck.loadSlide(slideNumber);
         });
       </pre>
     </article>
