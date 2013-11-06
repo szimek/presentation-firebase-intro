@@ -55,6 +55,20 @@
   border-bottom: none;
 }
 
+.alternatives {
+  margin-top: 25%;
+}
+
+.alternatives > div {
+  width: 48%;
+  display: inline-block;
+}
+
+
+.alternatives a {
+  font-size: 150%;
+  border-bottom: none;
+}
 
 .thank-you-slide {
   background-color: #2e2934 !important;
