@@ -33,7 +33,7 @@
             ref = new Firebase('https://presentations.firebaseio.com');
             ref.child('firebase-intro').on('value', function (snapshot) {
                 var slideNumber = snapshot.val();
-                location.hash = slideNumber;
+                window.slidedeck.loadSlide(slideNumber);
             });
         }
     }

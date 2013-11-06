@@ -19,11 +19,6 @@ function SlideDeck(el) {
 
   this.getCurrentSlideFromHash_();
 
-  window.addEventListener("hashchange", function (event) {
-      var slideNo = parseInt(document.location.hash.substr(1));
-      this.loadSlide(slideNo);
-  }.bind(this));
-
   // Call this explicitly. Modernizr.load won't be done until after DOM load.
   this.onDomLoaded_.bind(this)();
 }
