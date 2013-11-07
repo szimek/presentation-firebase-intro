@@ -1,40 +1,30 @@
 (function () {
-    BROADCAST_MODE_PARAM = 'broadcast';
-    FOLLOW_MODE_PARAM = 'follow';
-    PRESENTATION_NAME_PARAM = 'firebase-intro';
+  var database = 'presentations',
+      presentation = 'firebase-intro',
+      url = 'https://' + database + '.firebaseio.com/' + presentation,
+      ref = new Firebase(url),
+      params, auth, i, param;
 
-    var params = window.location.search.substring(1).split('&').map(function (el) {
-        return el.split('=');
-    }), ref, auth;
+  params = window.location.search.substring(1).split('&').map(function (el) {
+    return el.split('=');
+  });
 
-    for (var i = 0, param; param = params[i]; ++i) {
-        if (param[0].toLowerCase() == BROADCAST_MODE_PARAM) {
-            ref = new Firebase('https://presentations.firebaseio.com');
+  for (i = 0; param = params[i]; ++i) {
+    if (param[0].toLowerCase() === 'broadcast') {
+      // Authenticate using GitHub unless already authenticated
+      auth = new FirebaseSimpleLogin(ref, function(error, user) {
+        if (!user) { auth.login('github', { rememberMe: true }); }
+      });
 
-            auth = new FirebaseSimpleLogin(ref, function(error, user) {
-                if (error) {
-                    console.log('Firebase: Authentication error. ', error);
-                } else if (user) {
-                    console.log('Firebase: Logged in as', user.name);
-                } else {
-                    console.log('Firebase: Logged out. Logging in...');
-                    auth.login('github', {
-                        rememberMe: true
-                    });
-                }
-            });
-
-            document.addEventListener('slideenter', function (event) {
-                ref.child('firebase-intro').set(event.slideNumber, function (error) {
-                    if (error) console.log('Firebase: ', error);
-                });
-            });
-        } else if (param[0].toLowerCase() == FOLLOW_MODE_PARAM) {
-            ref = new Firebase('https://presentations.firebaseio.com');
-            ref.child('firebase-intro').on('value', function (snapshot) {
-                var slideNumber = snapshot.val();
-                window.slidedeck.loadSlide(slideNumber);
-            });
-        }
+      // Listen to slide change event and save slide number to Firebase
+      document.addEventListener('slideenter', function (event) {
+        ref.set(event.slideNumber);
+      });
+    } else if (param[0].toLowerCase() === 'follow') {
+      // Fetch slide number from Firebase and update the current slide
+      ref.on('value', function (snapshot) {
+        window.slidedeck.loadSlide(snapshot.val());
+      });
     }
+  }
 })();
